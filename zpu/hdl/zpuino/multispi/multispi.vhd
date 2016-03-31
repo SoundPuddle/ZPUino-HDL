@@ -144,7 +144,7 @@ architecture behave of multispi is
 
   type regstype is record
     state: statetype;
-    spibaseaddr: unsigned(23 downto 0);
+    spibaseaddr: unsigned(31 downto 0);
     membaseaddr: unsigned(31 downto 0);
     mindex: unsigned(31 downto 0);
     mem2baseaddr: unsigned(31 downto 0); -- for mapping
@@ -158,7 +158,7 @@ architecture behave of multispi is
     fen: std_logic;
     seldly: unsigned(1 downto 0);
     ctrln: std_logic_vector(3 downto 0); -- Controller number for this led
-    rgb: std_logic_vector(23 downto 0);
+    rgb: std_logic_vector(31 downto 0);
     rgbseq: unsigned(1 downto 0);
     ctrlen: std_logic;
 
@@ -251,8 +251,7 @@ begin
     w.fen :='0';
     w.wb_cyc := '0';
 
-    ictrldata(31 downto 24) <= (others =>'0');
-    ictrldata(23 downto 0) <= r.rgb;
+    ictrldata(31 downto 0) <= r.rgb;
 
     do_start := '0';
 
@@ -273,7 +272,7 @@ begin
             when "000" =>
               do_start := wb_dat_i(0);
             when "001" =>
-              w.spibaseaddr := unsigned(wb_dat_i(23 downto 0));
+              w.spibaseaddr := unsigned(wb_dat_i(31 downto 0));
               w.mem2baseaddr := unsigned(wb_dat_i); 
             when "010" =>
               w.membaseaddr := unsigned(wb_dat_i);
@@ -330,8 +329,8 @@ begin
         end if;
       when seek =>
         --
-        w.fdin(31 downto 24) := x"0b";
-        w.fdin(23 downto 0) := std_logic_vector(r.spibaseaddr);
+        --w.fdin(31 downto 24) := x"1b";
+        w.fdin(31 downto 0) := std_logic_vector(r.spibaseaddr);
         w.ftsize := "11"; -- 32-bit
         w.fen :='1';
         w.state := load;
@@ -395,7 +394,7 @@ begin
         w.wb_stb := '1';
 
         if mi_wb_ack_i='1' then
-          w.rgb := mi_wb_dat_i(31 downto 8);
+          w.rgb := mi_wb_dat_i(31 downto 0);
           w.wb_cyc := '0';
           --w.rgb := "100000010011110010101010";
           w.state := processrgb;
@@ -515,7 +514,7 @@ begin
         dout  => open,
         en    => ictrlen(i),
         ready => ictrlready(i),
-        transfersize  => "10", -- 24-bit
+        transfersize  => "11", -- 24-bit
         miso  => DontCareValue,
         mosi  => lmosi(i),
         clk_en  => ispi_clken(i),
