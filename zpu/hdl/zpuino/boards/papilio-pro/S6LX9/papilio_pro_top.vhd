@@ -632,11 +632,11 @@ begin
     wb_inta_o     => slot_interrupt(0),
 
     mosi          => spi_pf_mosi,
-    miso          => spi_pf_miso, sdflksdl;kf;lsdjfsdhfkjsdhfj
+    miso          => spi_pf_miso,
     sck           => spi_pf_sck,
     enabled       => open
   );
-sldkfjdlksjfkldsjfkldsjfkldsjf
+
   --
   -- IO SLOT 1
   --
